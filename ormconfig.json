@@ -5,8 +5,10 @@
     "username": "root",
     "password": "root",
     "database": "wallpaper_paradise",
-    "entities": ["src/**/*.entity{.ts,.js}"],
-    "migrations": ["src/database/migrations/*{.ts,.js}"],
+    "entities": ["dist/**/*.entity.js"],
+    "migrations" : [
+      "dist/database/migration/**/*.js"
+    ],  
     "cli": {"migrationsDir": "src/database/migrations"},
     "synchronize": false
   }

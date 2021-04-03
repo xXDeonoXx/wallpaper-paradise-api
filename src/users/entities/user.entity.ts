@@ -1,6 +1,9 @@
+import { ClassSerializerInterceptor, UseInterceptors } from '@nestjs/common';
+import { Exclude } from 'class-transformer';
 import { Column, Entity, PrimaryGeneratedColumn } from 'typeorm';
 
-@Entity()
+@UseInterceptors(ClassSerializerInterceptor)
+@Entity('users')
 export class User {
   @PrimaryGeneratedColumn()
   id: number;
@@ -12,6 +15,7 @@ export class User {
   email: string;
 
   @Column()
+  @Exclude()
   password: string;
 
   @Column()
