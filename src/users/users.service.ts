@@ -13,17 +13,24 @@ import { UpdateUserDto } from './dto/update-user.dto';
 import { User } from './entities/user.entity';
 import * as bcrypt from 'bcrypt';
 
-//TODO PESQUISAR SOBRE VALIDAÇÃO DOS DTO
+interface FindOneParams {
+  id?: string | number;
+  email?: string;
+  nickname?: string;
+}
 @Injectable()
 export class UsersService {
   constructor(
     @InjectRepository(User)
     private usersRepository: Repository<User>,
   ) {}
+
   async create(createUserDto: CreateUserDto): Promise<User> {
-    const user = this.usersRepository.find({
+    const user = await this.usersRepository.findOne({
       where: { email: createUserDto.email },
     });
+
+    console.log(user);
 
     if (user)
       throw new HttpException('User already exists', HttpStatus.CONFLICT);
@@ -41,8 +48,8 @@ export class UsersService {
     return this.usersRepository.find();
   }
 
-  findOne(id: number) {
-    return `This action returns a #${id} user`;
+  findOne(params: FindOneParams): Promise<User> {
+    return this.usersRepository.findOne({ where: { ...params } });
   }
 
   update(id: number, updateUserDto: UpdateUserDto) {
