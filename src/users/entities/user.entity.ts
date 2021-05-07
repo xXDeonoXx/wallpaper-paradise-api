@@ -1,6 +1,7 @@
 import { ClassSerializerInterceptor, UseInterceptors } from '@nestjs/common';
 import { Exclude } from 'class-transformer';
-import { Column, Entity, PrimaryGeneratedColumn } from 'typeorm';
+import { Image } from 'src/images/entities/image.entity';
+import { Column, Entity, OneToMany, PrimaryGeneratedColumn } from 'typeorm';
 
 @UseInterceptors(ClassSerializerInterceptor)
 @Entity('users')
@@ -20,4 +21,7 @@ export class User {
 
   @Column()
   nickname: string;
+
+  @OneToMany((type) => Image, (image) => image.uploader)
+  images: Image[];
 }
