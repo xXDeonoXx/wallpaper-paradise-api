@@ -22,7 +22,7 @@ interface FindOneParams {
 export class UsersService {
   constructor(
     @InjectRepository(User)
-    private usersRepository: Repository<User>,
+    private usersRepository: Repository<User>
   ) {}
 
   async create(createUserDto: CreateUserDto): Promise<User> {
@@ -30,15 +30,18 @@ export class UsersService {
       where: { email: createUserDto.email },
     });
 
-    console.log(user);
-
     if (user)
       throw new HttpException('User already exists', HttpStatus.CONFLICT);
 
     const hashedPassword = await bcrypt.hash(createUserDto.password, 8);
     const newUser = await this.usersRepository.save({
-      ...createUserDto,
+      email: createUserDto.email,
+      name: createUserDto.name,
+      nickname: createUserDto.nickname,
       password: hashedPassword,
+      roles: createUserDto.roles.map((role_id) => {
+        return { id: role_id };
+      }),
     });
     delete newUser.password;
     return newUser;

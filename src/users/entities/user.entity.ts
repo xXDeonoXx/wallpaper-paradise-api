@@ -1,7 +1,15 @@
 import { ClassSerializerInterceptor, UseInterceptors } from '@nestjs/common';
 import { Exclude } from 'class-transformer';
 import { Image } from 'src/images/entities/image.entity';
-import { Column, Entity, OneToMany, PrimaryGeneratedColumn } from 'typeorm';
+import { Role } from 'src/roles/entities/role.entity';
+import {
+  Column,
+  Entity,
+  JoinTable,
+  ManyToMany,
+  OneToMany,
+  PrimaryGeneratedColumn,
+} from 'typeorm';
 
 @UseInterceptors(ClassSerializerInterceptor)
 @Entity('users')
@@ -24,4 +32,16 @@ export class User {
 
   @OneToMany((type) => Image, (image) => image.uploader)
   images: Image[];
+
+  @ManyToMany((type) => Role)
+  @JoinTable({
+    name: 'user_roles',
+    joinColumn: {
+      name: 'user_id',
+    },
+    inverseJoinColumn: {
+      name: 'role_id',
+    },
+  })
+  roles: Role[];
 }

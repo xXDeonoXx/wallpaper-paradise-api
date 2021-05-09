@@ -13,4 +13,9 @@ export class CreateUserDto {
 
   @IsNotEmpty()
   nickname: string;
+
+  @IsNotEmpty({
+    message: 'Informe ao menos um perfil.',
+  })
+  roles?: number[];
 }
