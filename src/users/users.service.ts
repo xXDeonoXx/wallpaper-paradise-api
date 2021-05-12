@@ -52,7 +52,10 @@ export class UsersService {
   }
 
   findOne(params: FindOneParams): Promise<User> {
-    return this.usersRepository.findOne({ where: { ...params } });
+    return this.usersRepository.findOne({
+      where: { ...params },
+      relations: ['roles'],
+    });
   }
 
   update(id: number, updateUserDto: UpdateUserDto) {
