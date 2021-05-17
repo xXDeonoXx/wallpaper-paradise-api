@@ -8,6 +8,8 @@ import { ConfigModule } from '@nestjs/config';
 import { ImagesModule } from './images/images.module';
 import { CategoriesModule } from './categories/categories.module';
 import { RolesModule } from './roles/roles.module';
+import { JwtAuthGuard } from './auth/jwt-auth.guard';
+import { RolesGuard } from './roles/roles.guard';
 
 @Module({
   imports: [
@@ -20,6 +22,10 @@ import { RolesModule } from './roles/roles.module';
     RolesModule,
   ],
   controllers: [AppController],
-  providers: [AppService],
+  providers: [
+    AppService,
+    { provide: 'APP_GUARD', useClass: JwtAuthGuard },
+    { provide: 'APP_GUARD', useClass: RolesGuard },
+  ],
 })
 export class AppModule {}

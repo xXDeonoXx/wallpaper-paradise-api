@@ -8,6 +8,7 @@ import {
   UseInterceptors,
 } from '@nestjs/common';
 import { User } from 'src/users/entities/user.entity';
+import { Public } from 'src/utils/Public';
 import { AuthService } from './auth.service';
 import { LocalAuthGuard } from './local-auth.guard';
 
@@ -20,6 +21,7 @@ export class AuthController {
     return 'Alive';
   }
 
+  @Public()
   @UseGuards(LocalAuthGuard)
   @Post('/login')
   async authenticate(@Req() req): Promise<any> {
