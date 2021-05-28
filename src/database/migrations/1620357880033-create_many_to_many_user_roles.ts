@@ -29,12 +29,14 @@ export class createManyToManyUserRoles1620357880033
             columnNames: ['user_id'],
             referencedColumnNames: ['id'],
             referencedTableName: 'users',
+            onDelete: 'CASCADE',
           },
           {
             name: 'role_user_fk',
             columnNames: ['role_id'],
             referencedColumnNames: ['id'],
             referencedTableName: 'roles',
+            onDelete: 'CASCADE',
           },
         ],
       })

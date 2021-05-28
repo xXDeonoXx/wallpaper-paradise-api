@@ -25,7 +25,8 @@ export class Image {
   @Column()
   url: string;
 
-  @ManyToOne((type) => User, (user) => user.id)
+  @ManyToOne((type) => User, (user) => user.images, { cascade: true })
+  @JoinColumn({ name: 'uploader_id' })
   uploader: User;
 
   @ManyToMany((type) => Category)

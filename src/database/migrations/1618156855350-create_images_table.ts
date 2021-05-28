@@ -27,14 +27,14 @@ export class createImagesTable1618156855350 implements MigrationInterface {
             type: 'varchar',
           },
           {
-            name: 'uploader',
+            name: 'uploader_id',
             type: 'int',
           },
         ],
         foreignKeys: [
           new TableForeignKey({
             name: 'image_user_fk',
-            columnNames: ['uploader'],
+            columnNames: ['uploader_id'],
             referencedColumnNames: ['id'],
             referencedTableName: 'users',
             onDelete: 'CASCADE',

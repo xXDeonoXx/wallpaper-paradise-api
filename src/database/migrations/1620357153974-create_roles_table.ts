@@ -26,5 +26,7 @@ export class createRolesTable1620357153974 implements MigrationInterface {
     );
   }
 
-  public async down(queryRunner: QueryRunner): Promise<void> {}
+  public async down(queryRunner: QueryRunner): Promise<void> {
+    queryRunner.dropTable('roles');
+  }
 }

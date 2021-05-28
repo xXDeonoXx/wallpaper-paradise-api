@@ -21,10 +21,10 @@ import { Public } from 'src/utils/Public';
 
 @Controller('users')
 @UseInterceptors(ClassSerializerInterceptor)
-@UseGuards(JwtAuthGuard, RolesGuard)
 export class UsersController {
   constructor(private readonly usersService: UsersService) {}
 
+  @Public()
   @Post()
   create(@Body() createUserDto: CreateUserDto) {
     return this.usersService.create(createUserDto);

@@ -30,7 +30,7 @@ export class User {
   @Column()
   nickname: string;
 
-  @OneToMany((type) => Image, (image) => image.uploader)
+  @OneToMany(() => Image, (image) => image.uploader)
   images: Image[];
 
   @ManyToMany((type) => Role)
