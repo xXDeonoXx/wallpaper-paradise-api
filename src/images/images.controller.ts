@@ -7,9 +7,11 @@ import {
   Param,
   Patch,
   Post,
+  UploadedFile,
   UseGuards,
   UseInterceptors,
 } from '@nestjs/common';
+import { FileInterceptor } from '@nestjs/platform-express';
 import { RolesGuard } from 'src/roles/roles.guard';
 import { CurrentUser } from 'src/utils/user.decorator';
 import { CreateImageDto } from './dto/create-image.dto';
@@ -22,8 +24,13 @@ export class ImagesController {
   constructor(private readonly imagesService: ImagesService) {}
 
   @Post()
-  create(@Body() createImageDto: CreateImageDto, @CurrentUser() user) {
-    return this.imagesService.create(createImageDto, user);
+  @UseInterceptors(FileInterceptor('file'))
+  create(
+    @Body() createImageDto: CreateImageDto,
+    @CurrentUser() user,
+    @UploadedFile() file: Express.Multer.File
+  ) {
+    return this.imagesService.create(createImageDto, user, file);
   }
 
   @Get()

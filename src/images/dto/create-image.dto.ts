@@ -5,8 +5,8 @@ export class CreateImageDto {
   @IsNotEmpty()
   title: string;
 
-  @IsNotEmpty()
-  url: string;
+  // @IsNotEmpty()
+  // url: string;
 
   // picks the @CurrentUser and set him as the uploader
   //   @IsNotEmpty()

@@ -5,6 +5,7 @@ import { Role } from 'src/roles/entities/role.entity';
 import {
   Column,
   Entity,
+  JoinColumn,
   JoinTable,
   ManyToMany,
   OneToMany,

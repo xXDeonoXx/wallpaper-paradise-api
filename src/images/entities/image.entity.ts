@@ -30,6 +30,10 @@ export class Image {
   uploader: User;
 
   @ManyToMany((type) => Category)
-  @JoinTable({ name: 'image_categories' })
+  @JoinTable({
+    name: 'image_categories',
+    joinColumn: { name: 'image_id' },
+    inverseJoinColumn: { name: 'category_id' },
+  })
   categories: Category[];
 }
