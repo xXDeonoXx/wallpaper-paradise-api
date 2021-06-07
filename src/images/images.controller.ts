@@ -13,6 +13,7 @@ import {
 } from '@nestjs/common';
 import { FileInterceptor } from '@nestjs/platform-express';
 import { RolesGuard } from 'src/roles/roles.guard';
+import { Public } from 'src/utils/Public';
 import { CurrentUser } from 'src/utils/user.decorator';
 import { CreateImageDto } from './dto/create-image.dto';
 import { UpdateImageDto } from './dto/update-image.dto';
@@ -34,11 +35,13 @@ export class ImagesController {
   }
 
   @Get()
+  @Public()
   findAll() {
     return this.imagesService.findAll();
   }
 
   @Get(':id')
+  @Public()
   findOne(@Param('id') id: string) {
     return this.imagesService.findOne(+id);
   }

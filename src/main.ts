@@ -10,9 +10,9 @@ async function bootstrap() {
   config.update({
     accessKeyId: configService.get('AWS_ACCESS_KEY_ID'),
     secretAccessKey: configService.get('AWS_SECRET_ACCESS_KEY'),
-    region: configService.get('AWS_BUCKET_REGION'),
+    region: configService.get('AWS_REGION'),
   });
   app.useGlobalPipes(new ValidationPipe());
-  await app.listen(3000);
+  await app.listen(4000);
 }
 bootstrap();
