@@ -1,25 +1,25 @@
 import {
-  Controller,
-  Get,
-  Post,
   Body,
-  Patch,
-  Param,
-  Delete,
   ClassSerializerInterceptor,
+  Controller,
+  Delete,
+  Get,
+  Param,
+  Patch,
+  Post,
+  Query,
   UseInterceptors,
-  UseGuards,
 } from '@nestjs/common';
-import { UsersService } from './users.service';
-import { CreateUserDto } from './dto/create-user.dto';
-import { UpdateUserDto } from './dto/update-user.dto';
-import { JwtAuthGuard } from 'src/auth/jwt-auth.guard';
-import { Roles } from 'src/roles/roles.decorator';
 import { Role } from 'src/enums/role.enum';
-import { RolesGuard } from 'src/roles/roles.guard';
+import { Roles } from 'src/roles/roles.decorator';
+import { Page } from 'src/shared/Page';
 import { Public } from 'src/utils/Public';
 import { CurrentUser } from 'src/utils/user.decorator';
+import { CreateUserDto } from './dto/create-user.dto';
+import { FindUserParams } from './dto/find-user-dto';
+import { UpdateUserDto } from './dto/update-user.dto';
 import { User } from './entities/user.entity';
+import { UsersService } from './users.service';
 
 @Controller('users')
 @UseInterceptors(ClassSerializerInterceptor)
@@ -34,8 +34,8 @@ export class UsersController {
 
   @Get()
   @Roles(Role.REGULAR)
-  findAll() {
-    return this.usersService.findAll();
+  findAll(@Query() userParams: FindUserParams): Promise<Page<User>> {
+    return this.usersService.findPage(userParams);
   }
 
   @Get(':id')
