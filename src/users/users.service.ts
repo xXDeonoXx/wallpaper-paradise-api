@@ -7,13 +7,15 @@ import {
   UseInterceptors,
 } from '@nestjs/common';
 import { InjectRepository } from '@nestjs/typeorm';
-import { getRepository, Repository } from 'typeorm';
+import { createQueryBuilder, getRepository, Repository } from 'typeorm';
 import { CreateUserDto } from './dto/create-user.dto';
 import { UpdateUserDto } from './dto/update-user.dto';
 import { User } from './entities/user.entity';
 import * as bcrypt from 'bcrypt';
 import { Role as RoleEnum } from 'src/enums/role.enum';
 import { Role } from 'src/roles/entities/role.entity';
+import { FindUserParams } from './dto/find-user-dto';
+import { Page } from 'src/shared/Page';
 
 interface FindOneParams {
   id?: string | number;
@@ -50,8 +52,62 @@ export class UsersService {
     return newUser;
   }
 
-  findAll(): Promise<User[]> {
-    return this.usersRepository.find();
+  async findPage(pageable: FindUserParams): Promise<Page<User>> {
+    const {
+      size = 10,
+      page: pageNumber = 1,
+      name,
+      email,
+      nickname,
+      role,
+    } = pageable;
+    const query = createQueryBuilder(User, 'user');
+
+    query.leftJoinAndSelect('user.roles', 'role');
+
+    if (role) {
+      query.andWhere('role.id = :id', {
+        id: role,
+      });
+    }
+
+    if (name) {
+      query.andWhere('lower(user.name) like :name', {
+        name: `%${name
+          .toLowerCase()
+          .trim()
+          .replace(/[^\w\s]/gi, '')}%`,
+      });
+    }
+
+    if (email) {
+      query.andWhere('lower(user.email) like :email', {
+        email: `%${email.toLocaleLowerCase()}%`,
+      });
+    }
+
+    if (nickname) {
+      query.andWhere('lower(user.nickname) like :nickname', {
+        nickname: `%${nickname.toLocaleLowerCase()}%`,
+      });
+    }
+
+    query.orderBy('user.id', 'DESC');
+
+    query.take(Number(size));
+
+    if (pageNumber === 1) {
+      query.skip(Number(pageNumber) - 1);
+    } else {
+      const pageNumberMinusone = Number(pageNumber) - 1;
+      query.skip(Number(size) * Number(pageNumberMinusone));
+    }
+
+    const [users, count] = await query.getManyAndCount();
+
+    const page = new Page(users, count, pageNumber, size);
+
+    return page;
   }
 
   findOne(params: FindOneParams): Promise<User> {
