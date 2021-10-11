@@ -18,6 +18,8 @@ import { Roles } from 'src/roles/roles.decorator';
 import { Role } from 'src/enums/role.enum';
 import { RolesGuard } from 'src/roles/roles.guard';
 import { Public } from 'src/utils/Public';
+import { CurrentUser } from 'src/utils/user.decorator';
+import { User } from './entities/user.entity';
 
 @Controller('users')
 @UseInterceptors(ClassSerializerInterceptor)
@@ -43,12 +45,16 @@ export class UsersController {
   }
 
   @Patch(':id')
-  update(@Param('id') id: string, @Body() updateUserDto: UpdateUserDto) {
-    return this.usersService.update(+id, updateUserDto);
+  update(
+    @Param('id') id: string,
+    @Body() updateUserDto: UpdateUserDto,
+    @CurrentUser() currentUser: User
+  ) {
+    return this.usersService.update(+id, updateUserDto, currentUser);
   }
 
   @Delete(':id')
-  remove(@Param('id') id: string) {
-    return this.usersService.remove(+id);
+  remove(@Param('id') id: string, @CurrentUser() currentUser) {
+    return this.usersService.remove(+id, currentUser);
   }
 }
