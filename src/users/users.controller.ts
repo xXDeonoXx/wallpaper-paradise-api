@@ -34,7 +34,7 @@ export class UsersController {
 
   @Get()
   @Roles(Role.REGULAR)
-  findAll(@Query() userParams: FindUserParams): Promise<Page<User>> {
+  findPage(@Query() userParams: FindUserParams): Promise<Page<User>> {
     return this.usersService.findPage(userParams);
   }
 
