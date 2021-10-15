@@ -15,5 +15,5 @@ export class CreateImageDto {
   @IsNotEmpty({
     message: 'Informe ao menos uma categoria',
   })
-  categories: string;
+  categories: number[];
 }

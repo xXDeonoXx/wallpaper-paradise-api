@@ -12,8 +12,8 @@ import {
   UseInterceptors,
 } from '@nestjs/common';
 import { FileInterceptor } from '@nestjs/platform-express';
-import { RolesGuard } from 'src/roles/roles.guard';
 import { Page } from 'src/shared/Page';
+import { User } from 'src/users/entities/user.entity';
 import { Public } from 'src/utils/Public';
 import { CurrentUser } from 'src/utils/user.decorator';
 import { CreateImageDto } from './dto/create-image.dto';
@@ -50,12 +50,16 @@ export class ImagesController {
   }
 
   @Patch(':id')
-  update(@Param('id') id: string, @Body() updateImageDto: UpdateImageDto) {
-    return this.imagesService.update(+id, updateImageDto);
+  update(
+    @Param('id') id: string,
+    @Body() updateImageDto: UpdateImageDto,
+    @CurrentUser() currentUser: User
+  ) {
+    return this.imagesService.update(+id, updateImageDto, currentUser);
   }
 
   @Delete(':id')
-  remove(@Param('id') id: string) {
-    return this.imagesService.remove(+id);
+  remove(@Param('id') id: string, @CurrentUser() currentUser: User) {
+    return this.imagesService.remove(+id, currentUser);
   }
 }

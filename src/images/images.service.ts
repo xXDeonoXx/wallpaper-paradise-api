@@ -2,6 +2,7 @@ import { HttpException, HttpStatus, Injectable } from '@nestjs/common';
 import { InjectRepository } from '@nestjs/typeorm';
 import { S3 } from 'aws-sdk';
 import { Category } from 'src/categories/entities/category.entity';
+import { Role as RoleEnum, Role as RolesEnum } from 'src/enums/role.enum';
 import { Page } from 'src/shared/Page';
 import { User } from 'src/users/entities/user.entity';
 import { createQueryBuilder, Repository } from 'typeorm';
@@ -60,10 +61,7 @@ export class ImagesService {
       throw new HttpException('User already exists', HttpStatus.NOT_FOUND);
 
     const { title, categories } = createImageDto;
-    const selectedCategories = await this.categoryRepository.findByIds(
-      categories.split(',')
-    );
-    if (selectedCategories.length < 1) {
+    if (categories.length < 1) {
       throw new HttpException(
         'Any of your selected categories exists',
         HttpStatus.NOT_FOUND
@@ -75,7 +73,9 @@ export class ImagesService {
     const newImage = await this.imageRepository.save({
       title: title,
       uploader: user,
-      categories: selectedCategories,
+      categories: categories.map((c) => {
+        return { id: c };
+      }),
       url: uploadedFile,
     });
     return newImage;
@@ -92,6 +92,7 @@ export class ImagesService {
     const query = createQueryBuilder(Image, 'image');
 
     query.leftJoinAndSelect('image.categories', 'category');
+    query.leftJoinAndSelect('image.uploader', 'uploader');
 
     if (title) {
       query.andWhere('lower(image.title) like :title', {
@@ -103,7 +104,19 @@ export class ImagesService {
     }
 
     if (uploader_id) {
-      query.and;
+      query.andWhere('lower(image.uploader_id) = :uploader_id', {
+        uploader_id,
+      });
+    }
+
+    if (categories) {
+      const inString = [];
+      categories.forEach((category_id, index) => {
+        index === categories.length
+          ? inString.push(`${category_id}'` + ', ')
+          : inString.push(`${category_id}'`);
+      });
+      query.andWhere(`category.id IN (:inString)`, { inString });
     }
 
     query.orderBy('image.id', 'DESC');
@@ -121,15 +134,74 @@ export class ImagesService {
     return new Page(images, count, pageNumber, size);
   }
 
-  findOne(id: number) {
-    return `This action returns a #${id} image`;
+  async findOne(id: number) {
+    const image = await this.imageRepository.findOne(id, {
+      relations: ['categories', 'uploader'],
+    });
+    if (image) return image;
+
+    throw new HttpException('Image not Found', HttpStatus.NOT_FOUND);
   }
 
-  update(id: number, updateImageDto: UpdateImageDto) {
-    return `This action updates a #${id} image`;
+  async update(id: number, updateImageDto: UpdateImageDto, currentUser: User) {
+    if (
+      currentUser.id !== id &&
+      currentUser.roles.find((role) => {
+        return role.name === RolesEnum.ADMINISTRADOR;
+      })
+    ) {
+      throw new HttpException(
+        "You don't have permission to access this resource",
+        HttpStatus.UNAUTHORIZED
+      );
+    }
+
+    const image = await this.imageRepository.findOne({
+      where: { id },
+      relations: ['categories'],
+    });
+
+    if (!image)
+      throw new HttpException('Image not found', HttpStatus.NOT_FOUND);
+
+    const categoriesChosen = updateImageDto.categories
+      ? await this.categoryRepository.findByIds(updateImageDto.categories)
+      : [];
+
+    if (categoriesChosen.length < updateImageDto.categories?.length)
+      throw new HttpException(
+        `one or more of the provided categories doesn't exist`,
+        HttpStatus.NOT_FOUND
+      );
+
+    return this.imageRepository.save({
+      ...image,
+      ...updateImageDto,
+      categories:
+        (categoriesChosen?.length > 0 && [...categoriesChosen]) ||
+        image.categories,
+    });
   }
 
-  remove(id: number) {
-    return `This action removes a #${id} image`;
+  async remove(id: number, currentUser: User) {
+    const image = await this.imageRepository.findOne({
+      where: { id },
+      relations: ['categories', 'uploader'],
+    });
+    if (!image)
+      throw new HttpException('Image not found', HttpStatus.NOT_FOUND);
+
+    if (
+      image.uploader.id != currentUser.id &&
+      !currentUser.roles.find((role) => {
+        return role.name === RoleEnum.ADMINISTRADOR;
+      })
+    ) {
+      throw new HttpException(
+        "You don't have permission to access this resource",
+        HttpStatus.UNAUTHORIZED
+      );
+    }
+    return this.imageRepository.remove(image);
   }
 }
