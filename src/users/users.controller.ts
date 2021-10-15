@@ -34,7 +34,7 @@ export class UsersController {
 
   @Get()
   @Roles(Role.REGULAR)
-  findAll(@Query() userParams: FindUserParams): Promise<Page<User>> {
+  findPage(@Query() userParams: FindUserParams): Promise<Page<User>> {
     return this.usersService.findPage(userParams);
   }
 
@@ -54,6 +54,7 @@ export class UsersController {
   }
 
   @Delete(':id')
+  @Roles(Role.ADMINISTRADOR)
   remove(@Param('id') id: string, @CurrentUser() currentUser) {
     return this.usersService.remove(+id, currentUser);
   }

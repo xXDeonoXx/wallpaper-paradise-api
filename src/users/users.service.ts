@@ -161,22 +161,15 @@ export class UsersService {
       roles: (selectedRoles.length > 0 && selectedRoles) || user.roles,
     });
 
-    return this.usersRepository.save(newUser);
+    return this.usersRepository.save({
+      id: user.id,
+      ...updateUserDto,
+      password: hashedPassword,
+      roles: (selectedRoles.length > 0 && selectedRoles) || user.roles,
+    });
   }
 
   async remove(id: number, currentUser: User) {
-    if (
-      currentUser.id !== id &&
-      currentUser.roles.find((role) => {
-        return role.name === RoleEnum.ADMINISTRADOR;
-      })
-    ) {
-      throw new HttpException(
-        "You don't have permission to access this resource",
-        HttpStatus.UNAUTHORIZED
-      );
-    }
-
     const user = await this.usersRepository.findOne({ where: { id: id } });
     if (!user) throw new HttpException('User not Found', HttpStatus.NOT_FOUND);
     return this.usersRepository.remove(user);
