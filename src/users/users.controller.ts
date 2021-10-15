@@ -54,6 +54,7 @@ export class UsersController {
   }
 
   @Delete(':id')
+  @Roles(Role.ADMINISTRADOR)
   remove(@Param('id') id: string, @CurrentUser() currentUser) {
     return this.usersService.remove(+id, currentUser);
   }
