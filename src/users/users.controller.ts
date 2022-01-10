@@ -8,6 +8,7 @@ import {
   Patch,
   Post,
   Query,
+  Req,
   UseInterceptors,
 } from '@nestjs/common';
 import { Role } from 'src/enums/role.enum';
@@ -36,6 +37,11 @@ export class UsersController {
   @Roles(Role.REGULAR)
   findPage(@Query() userParams: FindUserParams): Promise<Page<User>> {
     return this.usersService.findPage(userParams);
+  }
+
+  @Get('/personal-info')
+  getPersonalInfo(@Req() req): Promise<User> {
+    return this.usersService.getPersonalInfo(req.user);
   }
 
   @Get(':id')

@@ -110,11 +110,24 @@ export class UsersService {
     return page;
   }
 
-  findOne(params: FindOneParams): Promise<User> {
+  async findOne(params: FindOneParams): Promise<User> {
     return this.usersRepository.findOne({
       where: { ...params },
       relations: ['roles'],
     });
+  }
+
+  async getPersonalInfo(user: User) {
+    const userInfo = await this.usersRepository.findOne({
+      where: { id: user.id },
+    });
+    if (!userInfo) {
+      throw new HttpException(
+        'User not Found, invalid token',
+        HttpStatus.NOT_FOUND
+      );
+    }
+    return userInfo;
   }
 
   /**
