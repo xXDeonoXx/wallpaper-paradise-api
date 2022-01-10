@@ -17,7 +17,6 @@ export class AuthService {
     if (!user) throw new HttpException('User not found', HttpStatus.NOT_FOUND);
 
     const isMatch = await bcrypt.compare(password, user.password);
-    console.log(isMatch, password);
     if (isMatch) {
       return user;
     } else {
@@ -32,6 +31,12 @@ export class AuthService {
     const payload = { nickname, id, roles };
     return {
       access_token: this.jwtService.sign(payload),
+      user: {
+        email,
+        name,
+        nickname,
+        roles,
+      },
     };
   }
 }
