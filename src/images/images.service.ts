@@ -34,7 +34,7 @@ export class ImagesService {
         HttpStatus.BAD_REQUEST
       );
 
-    const generatedName = `${uuidv4()}-${file.originalname}`;
+    const generatedName = `${uuidv4()}-${file.originalname.replace(' ', '_')}`;
 
     await this.client
       .putObject({
