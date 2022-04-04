@@ -57,8 +57,12 @@ export class ImagesService {
     const user = await this.userRepositoty.findOne({
       where: { id: sessionUser.id },
     });
-    if (!user)
-      throw new HttpException('User already exists', HttpStatus.NOT_FOUND);
+    if (!user) throw new HttpException('User not found', HttpStatus.NOT_FOUND);
+    if (!image)
+      throw new HttpException(
+        'Request body dont contain a file',
+        HttpStatus.BAD_REQUEST
+      );
 
     const { title, categories } = createImageDto;
     if (categories.length < 1) {
