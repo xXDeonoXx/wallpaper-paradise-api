@@ -42,7 +42,7 @@ export class ImagesService {
         Key: generatedName,
         ACL: 'public-read',
         Body: file.buffer,
-        ContentType: 'image/png',
+        ContentType: file.mimetype,
       })
       .promise();
 
