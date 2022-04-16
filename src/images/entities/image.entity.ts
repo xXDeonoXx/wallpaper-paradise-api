@@ -29,7 +29,7 @@ export class Image {
   @JoinColumn({ name: 'uploader_id' })
   uploader: User;
 
-  @ManyToMany((type) => Category)
+  @ManyToMany((type) => Category, { onDelete: 'CASCADE' })
   @JoinTable({
     name: 'image_categories',
     joinColumn: { name: 'image_id' },
