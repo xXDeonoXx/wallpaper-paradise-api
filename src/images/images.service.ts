@@ -115,11 +115,15 @@ export class ImagesService {
 
     if (categories) {
       const inString = [];
-      categories.forEach((category_id, index) => {
-        index === categories.length
-          ? inString.push(`${category_id}'` + ', ')
-          : inString.push(`${category_id}'`);
-      });
+      if (Array.isArray(categories)) {
+        categories.forEach((category_id, index) => {
+          index === categories.length
+            ? inString.push(`${category_id}'` + ', ')
+            : inString.push(`${category_id}'`);
+        });
+      } else {
+        inString.push(`${categories}'`);
+      }
       query.andWhere(`category.id IN (:inString)`, { inString });
     }
 
