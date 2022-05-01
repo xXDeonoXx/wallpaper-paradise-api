@@ -11,6 +11,7 @@ import {
 import { Role } from 'src/enums/role.enum';
 import { Roles } from 'src/roles/roles.decorator';
 import { Page } from 'src/shared/Page';
+import { Public } from 'src/utils/Public';
 import { CategoriesService } from './categories.service';
 import { CreateCategoryDto } from './dto/create-category.dto';
 import { FindCategoryParams } from './dto/find-category.dto';
@@ -28,6 +29,7 @@ export class CategoriesController {
   }
 
   @Get()
+  @Public()
   findAll(
     @Query() categoryParams: FindCategoryParams
   ): Promise<Page<Category>> {
@@ -35,6 +37,7 @@ export class CategoriesController {
   }
 
   @Get(':id')
+  @Public()
   findOne(@Param('id') id: string): Promise<Category> {
     return this.categoriesService.findOne(+id);
   }
